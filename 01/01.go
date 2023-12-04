@@ -44,6 +44,10 @@ func readText(line string) (int, int) {
 		if err == nil && rightPointer == -1 {
 			rightPointer = rightValue
 		}
+
+		if leftPointer != -1 && rightPointer != -1 {
+			break
+		}
 	}
 
 	return leftPointer, rightPointer
