@@ -1,10 +1,28 @@
 package s01
 
 import (
-	share "donkermiton.main/share"
 	"fmt"
 	"strconv"
+
+	share "donkermiton.main/share"
 )
+
+var wordsDictionary = map[string]string{
+	"one":   "",
+	"two":   "",
+	"three": "",
+	"four":  "",
+	"five":  "",
+	"six":   "",
+	"seven": "",
+	"eight": "",
+	"nine":  "",
+}
+
+type Amplitude struct {
+	currentNumber int
+	wasAssign     bool
+}
 
 func Run() {
 	scanner, err := share.ReadFile("./01/data.txt")
@@ -28,37 +46,89 @@ func Run() {
 	fmt.Println(sum)
 }
 
-func readText(line string) (int, int) {
-	var leftPointer int = -1
-	var rightPointer int = -1
-
-	for i := 0; i < len(line); i++ {
-		leftValue, err := parseToInt(line[i])
-
-		if err == nil && leftPointer == -1 {
-			leftPointer = leftValue
-		}
-
-		rightValue, err := parseToInt(line[len(line)-i-1])
-
-		if err == nil && rightPointer == -1 {
-			rightPointer = rightValue
-		}
-
-		if leftPointer != -1 && rightPointer != -1 {
-			break
-		}
-	}
-
-	return leftPointer, rightPointer
+func isNumeric(s string) bool {
+	_, err := strconv.Atoi(s)
+	return err == nil
 }
 
-func parseToInt(char uint8) (int, error) {
-	parsedValue, err := strconv.Atoi(string(char))
+func readText(line string) (int, int) {
+	firstValue := Amplitude{currentNumber: -1, wasAssign: false}
+	lastValue := Amplitude{currentNumber: -1, wasAssign: false}
 
-	if err != nil {
-		return -1, err
+	for i := 0; i < len(line); i++ {
+		isNumber := isNumeric(string(line[i]))
+		if isNumber {
+			clearAllValuesInDictionary()
+
+			parsedNumber := parseToInt(line[i])
+
+			if !firstValue.wasAssign {
+				firstValue.currentNumber = parsedNumber
+				firstValue.wasAssign = true
+			} else if firstValue.wasAssign {
+				lastValue.currentNumber = parsedNumber
+				lastValue.wasAssign = true
+			}
+		} else {
+			currentChar := rune(line[i])
+			result := iterateThroughMap(currentChar)
+
+			if result != -1 {
+				if !firstValue.wasAssign {
+					firstValue.currentNumber = result
+					firstValue.wasAssign = true
+				} else if firstValue.wasAssign {
+					lastValue.currentNumber = result
+					lastValue.wasAssign = true
+				}
+			}
+
+		}
 	}
 
-	return parsedValue, nil
+	if lastValue.wasAssign == false {
+		lastValue.currentNumber = firstValue.currentNumber
+	}
+
+	return firstValue.currentNumber, lastValue.currentNumber
+}
+
+func iterateThroughMap(char rune) int {
+	index := 0
+	for key := range wordsDictionary {
+		mapValueLength := len(wordsDictionary[key])
+		charSuits := checkCharSuits(mapValueLength, key, char)
+
+		if charSuits {
+			wordsDictionary[key] = fmt.Sprintf("%s%s", wordsDictionary[key], string(char))
+			if len(wordsDictionary[key]) == len(key) {
+				return index
+			}
+		} else {
+			clearSelectedKeyFromDictionary(key)
+		}
+		index++
+	}
+	return -1
+}
+
+func checkCharSuits(index int, entireName string, char rune) bool {
+	fmt.Printf("%s %d", entireName, index)
+	return rune(entireName[index]) == char
+}
+
+func parseToInt(char uint8) int {
+	parsedValue, _ := strconv.Atoi(string(char))
+
+	return parsedValue
+}
+
+func clearSelectedKeyFromDictionary(key string) {
+	wordsDictionary[key] = ""
+}
+
+func clearAllValuesInDictionary() {
+	for key := range wordsDictionary {
+		clearSelectedKeyFromDictionary(key)
+	}
 }
