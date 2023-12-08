@@ -1,10 +1,9 @@
 package s01
 
 import (
+	share "donkermiton.main/share"
 	"fmt"
 	"strconv"
-
-	share "donkermiton.main/share"
 )
 
 var wordsDictionary = map[string]string{
@@ -74,6 +73,7 @@ func readText(line string) (int, int) {
 			result := iterateThroughMap(currentChar)
 
 			if result != -1 {
+				fmt.Println(result)
 				if !firstValue.wasAssign {
 					firstValue.currentNumber = result
 					firstValue.wasAssign = true
@@ -96,25 +96,29 @@ func readText(line string) (int, int) {
 func iterateThroughMap(char rune) int {
 	index := 0
 	for key := range wordsDictionary {
-		mapValueLength := len(wordsDictionary[key])
-		charSuits := checkCharSuits(mapValueLength, key, char)
+		dictionaryValue := wordsDictionary[key]
+		charSuits := checkCharSuits(key, dictionaryValue, char)
 
 		if charSuits {
 			wordsDictionary[key] = fmt.Sprintf("%s%s", wordsDictionary[key], string(char))
+
 			if len(wordsDictionary[key]) == len(key) {
+				clearSelectedKeyFromDictionary(key)
 				return index
 			}
+
 		} else {
 			clearSelectedKeyFromDictionary(key)
 		}
+
 		index++
 	}
 	return -1
 }
 
-func checkCharSuits(index int, entireName string, char rune) bool {
-	fmt.Printf("%s %d", entireName, index)
-	return rune(entireName[index]) == char
+func checkCharSuits(key string, value string, char rune) bool {
+	valueLength := len(value)
+	return rune(key[valueLength]) == char
 }
 
 func parseToInt(char uint8) int {
