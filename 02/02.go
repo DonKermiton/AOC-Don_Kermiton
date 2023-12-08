@@ -27,20 +27,32 @@ func Run() {
 	}
 
 	index := 0
+	resultArr := []int{}
 	for scanner.Scan() {
+		result := readLine(scanner.Text(), index)
 
-		readLine(scanner.Text(), index)
-		break
+		if result == true {
+			fmt.Println(scanner.Text(), index+1)
+			resultArr = append(resultArr, index+1)
+		}
+
 		index++
 	}
+
+	sum := 0
+	for _, value := range resultArr {
+		sum += value
+	}
+
+	fmt.Println(sum)
 }
 
-func readLine(line string, index int) {
+func readLine(line string, index int) bool {
 	// skip "GAME {index}: "
 	indexDigits := len(fmt.Sprintf("%d", index+1))
 	skipEntryRule := 5 + indexDigits + 1
 
-	var numberOfCubes []int = []int{}
+	numberOfCubes := ""
 	for i := skipEntryRule; i < len(line); i++ {
 
 		// 32 == empty string
@@ -48,9 +60,9 @@ func readLine(line string, index int) {
 			continue
 		}
 
-		// 44 == comma
+		// 44 == comma ;; 59 == semicolon
 		if line[i] == 44 || line[i] == 59 {
-			numberOfCubes = []int{}
+			numberOfCubes = ""
 		}
 
 		char := rune(line[i])
@@ -59,16 +71,22 @@ func readLine(line string, index int) {
 			convertedString := string(char)
 			convertedInt, _ := strconv.ParseInt(convertedString, 10, 8)
 
-			numberOfCubes = append(numberOfCubes, int(convertedInt))
+			numberOfCubes = fmt.Sprintf("%s%d", numberOfCubes, convertedInt)
 			clearAllValuesInDictionary()
 		} else {
 			word := readTextInLine(char)
 
 			if word != "" {
-				fmt.Println(numberOfCubes, word)
+				convertedInt, _ := strconv.ParseInt(numberOfCubes, 10, 8)
+				isSetValid := checkNumbersAreValid(convertedInt, word)
+
+				if isSetValid == false {
+					return false
+				}
 			}
 		}
 	}
+	return true
 }
 
 func readTextInLine(char rune) string {
@@ -95,4 +113,17 @@ func clearAllValuesInDictionary() {
 	for key := range textMap {
 		textMap[key] = ""
 	}
+}
+
+func checkNumbersAreValid(numb int64, color string) bool {
+	switch color {
+	case "green":
+		return numb <= green
+	case "red":
+		return numb <= red
+	case "blue":
+		return numb <= blue
+	}
+
+	return false
 }
