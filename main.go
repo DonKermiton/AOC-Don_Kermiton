@@ -1,7 +1,7 @@
 package main
 
 import (
-	pack "donkermiton.main/01"
+	pack "donkermiton.main/02"
 )
 
 func main() {
