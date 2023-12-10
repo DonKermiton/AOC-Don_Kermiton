@@ -1,6 +1,7 @@
 package _4
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -46,6 +47,8 @@ func TestThirdSet(t *testing.T) {
 	result, winningNumbers := readLine("Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1", 2)
 	correctWinningNumbers := []int{1, 21, 53, 59, 44}
 	correctResultNumbers := []int{1, 21}
+
+	fmt.Println(result)
 	checkSets(t, winningNumbers, correctWinningNumbers)
 
 	checkResultSets(t, result, correctResultNumbers)

@@ -1,9 +1,10 @@
 package _4
 
 import (
-	"donkermiton.main/share"
 	"fmt"
 	"strconv"
+
+	"donkermiton.main/share"
 )
 
 const (
@@ -22,7 +23,19 @@ func Run() {
 
 	sum := 0
 	for scanner.Scan() {
-		_result, _ := readLine(scanner.Text(), index)
+		result, _ := readLine(scanner.Text(), index)
+
+		points := 0
+		for range result {
+			if points == 0 {
+				points = 1
+			} else {
+				points *= 2
+			}
+		}
+
+		fmt.Println(result)
+		sum += points
 
 		index++
 	}
@@ -58,6 +71,7 @@ func readLine(line string, index int64) ([]int, []int) {
 				currentWinningNumbers = ""
 			case addingUserNumbers:
 				isWinningNumber := IsWinningNumber(winningNumbers, parsedNumber)
+				fmt.Println(winningNumbers, parsedNumber)
 
 				if isWinningNumber == true {
 					result = append(result, parsedNumber)
@@ -78,6 +92,16 @@ func readLine(line string, index int64) ([]int, []int) {
 			currentWinningNumbers = fmt.Sprintf("%s%s", currentWinningNumbers, currChar)
 		}
 	}
+
+	parsedNumber, _ := convertStringToNumber(currentWinningNumbers)
+
+	isWinningNumber := IsWinningNumber(winningNumbers, parsedNumber)
+	fmt.Println(winningNumbers, parsedNumber)
+
+	if isWinningNumber == true {
+		result = append(result, parsedNumber)
+	}
+	currentWinningNumbers = ""
 
 	return result, winningNumbers
 }
